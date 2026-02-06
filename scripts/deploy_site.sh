@@ -13,6 +13,16 @@ if [ -z "$FLOATING_IP" ]; then
   exit 1
 fi
 
+if ping -c 1 -W 2 "$IP" &>/dev/null; then
+  echo "Ping OK sur $FOATING_IP, on continue..."
+  # ici tes commandes suivantes
+  echo "Suite du script..."
+else
+  echo "Ping échoué sur $IP, arrêt du script."
+  exit 1
+fi
+
+
 echo "Connexion SSH à la VM via Floating IP : $FLOATING_IP"
 
 # Script à exécuter sur la VM (via here‑document)

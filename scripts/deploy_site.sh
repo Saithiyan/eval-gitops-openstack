@@ -53,7 +53,7 @@ server {
     root /var/www/localhost/htdocs;
     index index.html;
     location / {
-        try_files \$uri \$uri/ =404;
+        try_files $uri $uri/ =404;
     }
 }
 CONF
@@ -66,7 +66,7 @@ doas tee /var/www/localhost/htdocs/index.html > /dev/null << 'HTML'
   <title>SAI Eval Gitops Openstack</title>
 </head>
 <body>
-  <h1>Serveur : \$HOSTNAME</h1>
+  <h1>Serveur Web>
   <p>hébergé sur Microstack Openstack</p>
 </body>
 </html>

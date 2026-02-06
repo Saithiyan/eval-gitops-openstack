@@ -30,13 +30,13 @@ jobs:
         with:
           path: .
 
-publish:
-  needs: deploy
-  runs-on: ubuntu-latest
-  permissions:
-    pages: write
-    id-token: write
-  environment:
-    name: github-pages
-  steps:
-    - uses: actions/deploy-pages@v4
+  publish:
+    needs: deploy
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+    steps:
+      - uses: actions/deploy-pages@v4

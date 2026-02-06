@@ -10,7 +10,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+<<<<<<< HEAD
       - name: Générer le fichier html
+=======
+      - name: Générer fichier html
+>>>>>>> 2f9d47ef9c2599c62691e22eced237452c943b5b
         run: |
           cat <<EOF > index.html
           <!DOCTYPE html>

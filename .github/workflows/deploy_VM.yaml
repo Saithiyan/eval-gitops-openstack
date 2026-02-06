@@ -1,0 +1,27 @@
+name: Gitops Openstack Selfhosted VM
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Déploiement d'une VM alpine linux et page web avec Nginx
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+ publish:
+    needs: deploy
+    runs-on: self-hosted
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+    steps:
+      - uses: actions/deploy-pages@v4

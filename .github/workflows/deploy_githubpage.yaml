@@ -1,0 +1,42 @@
+name: Eval Gitops - Openstack : Github Page SAI
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Générer index.html depuis intent.yaml
+        run: |
+          cat <<EOF > index.html
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <title>Eval Sai</title>
+            </head>
+            <body>
+              <h1>SAI - Eval Gitops Openstack et Github Page</h1>
+              <p>Fichier HTML généré dans le workflows CI/CD</p>
+            </body>
+          </html>
+          EOF
+
+      - name: Publier sur GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+publish:
+  needs: deploy
+  runs-on: ubuntu-latest
+  permissions:
+    pages: write
+    id-token: write
+  environment:
+    name: github-pages
+  steps:
+    - uses: actions/deploy-pages@v4

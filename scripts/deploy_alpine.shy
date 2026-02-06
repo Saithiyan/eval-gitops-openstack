@@ -1,0 +1,49 @@
+#!/bin/bash
+
+# Vérification des paramètres
+if [ "$#" -ne 1 ]; then
+  echo "Usage: $0 <nom_de_la_vm>"
+  exit 1
+fi
+
+VM_NAME=$1
+IMAGE="Alpine3.21"
+FLAVOR="Minus"
+NETWORK="LAN-LABO"
+CLOUDCONFIG= "/var/snap/microstack/common/cloudinit/user-data.yaml"
+
+sudo cp "../cloudinit/user-data.yaml" /var/snap/microstack/common/cloudinit
+
+# Vérifie si la VM existe déjà
+if openstack server list | grep -q "$VM_NAME"; then
+  echo "La VM existe déjà !"
+  exit 0
+fi
+
+# Création de la VM
+openstack server create "$VM_NAME" \
+--image "$IMAGE" \
+--flavor "$FLAVOR" \
+--network "$NETWORK" \
+--user-data "$CLOUDCONFIG" \
+--config-drive true
+
+# Attendre que la VM soit active et récupération de l'IP
+openstack server wait "$VM_NAME"
+IP=$(openstack server show "$VM_NAME" \
+  -f value -c addresses | cut -d= -f2)
+
+echo "La VM $VM_NAME est déployée avec IP : $IP"
+
+# Création du floating IP sur le reseau external
+FLOATING_IP=$(openstack floating ip create external \
+  -f value -c floating_ip_address)
+
+echo "Floating IP créé : $FLOATING_IP"
+
+# Association du Floating IP à la VM
+openstack server add floating ip "$VM_NAME" "$FLOATING_IP"
+
+echo "La VM $VM_NAME est accessible via Floating IP : $FLOATING_IP"
+
+bash ./deploy_site.sh "$FLOATING_IP"

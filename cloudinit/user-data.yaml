@@ -1,0 +1,58 @@
+#cloud-config
+
+package_update: true
+package_upgrade: true
+packages:
+  - doas
+  - curl
+  - git
+  - nginx
+
+users:
+  - name: sai
+    groups: wheel
+    shell: /bin/ash
+    lock_passwd: false
+    passwd: $6$kaYcka01fl7temfK$AH1FvRbBdz.Uvc310kd4dThFwbCyUMdi8TYQqEm2kiTqq.7e7BtCq8KKt90b1LQunHq1LQ.nlOPs58X2VQtVE.
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIL1dYdnmysRJt5vzuC5GCkweh+cjy2m91DQpbv3EdzPC sai@sai-openstack
+ssh_pwauth: true
+chpasswd:
+  expire: false
+
+network:
+  version: 2
+  ethernets:
+    eth0:
+      dhcp4: false
+      addresses:
+        - 192.168.17.07/24
+      gateway4: 172.168.17.254
+      nameservers:
+        addresses: [1.1.1.1, 1.0.0.1]
+      dhcp6: false
+
+write_files:
+  - path: /etc/doas.conf
+    permissions: '0644'
+    owner: root:root
+    content: |
+      # Autoriser les membres du groupe wheel à exécuter des commandes root sans mot de passe
+      permit nopass :wheel
+
+write_files:
+  - path: /etc/motd
+    permissions: '0644'
+    content: |
+      Bienvenue sur le serveur web Alpine 3.21
+      Depuis la machine OpenStack de SAI !
+      Provisionnée avec Cloud-init
+
+runcmd:
+  - |
+    #!/bin/sh
+    doas apk update
+    doas apk add nginx
+    rc-update add nginx default
+    rc-service nginx start
+    echo "Installation personnalisée de sai" > Message_de_Verification.txt

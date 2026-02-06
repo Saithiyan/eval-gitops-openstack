@@ -13,14 +13,24 @@ if [ -z "$FLOATING_IP" ]; then
   exit 1
 fi
 
-if ping -c 1 -W 2 "$IP" &>/dev/null; then
-  echo "Ping OK sur $FOATING_IP, on continue..."
-  # ici tes commandes suivantes
-  echo "Suite du script..."
-else
-  echo "Ping échoué sur $IP, arrêt du script."
-  exit 1
-fi
+# Check port 22 et Ping vers la VM
+echo "Attente que $FLOATING_IP soit joignable (ping + port 22 ouvert)..."
+
+while true; do
+  # Tester le ping
+  if ping -c 1 -W 2 "$FLOATING_IP" &>/dev/null; then
+    # Tester le port 22
+    if nc -z -w 2 "$FLOATING_IP" 22; then
+      echo "Ping OK et port 22 ouvert sur $FLOATING_IP, on continue."
+      break
+    else
+      echo "Ping OK mais port 22 fermé sur $FLOATING_IP, attente..."
+    fi
+  else
+    echo "Ping échoué sur $FLOATING_IP, attente..."
+  fi
+  sleep 3
+done
 
 
 echo "Connexion SSH à la VM via Floating IP : $FLOATING_IP"

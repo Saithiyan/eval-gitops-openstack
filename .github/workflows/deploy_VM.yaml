@@ -8,20 +8,12 @@ jobs:
   deploy:
     runs-on: self-hosted
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Déploiement d'une VM alpine linux et page web avec Nginx
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: .
+      - name: Rend deploy_alpine.sh executable
+        run: chmod +x scripts/deploy_alpine.sh
 
- publish:
-    needs: deploy
-    runs-on: self-hosted
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-    steps:
-      - uses: actions/deploy-pages@v4
+      - name: Déploiement de la VM alpine et du serveur web nginx
+        run: bash scripts/deploy_alpine.sh test1
+

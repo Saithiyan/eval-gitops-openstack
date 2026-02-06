@@ -65,4 +65,4 @@ fi
 echo "Floating IP de la VM $VM_NAME: $FLOATING_IP"
 
 # Lancer le script de déploiement nginx sur la VM
-bash ./deploy_site.sh "$FLOATING_IP"
+bash scripts/deploy_site.sh "$FLOATING_IP"
